@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <GamePad.h>
 #include <ps2dev.h> 
-
+#include <config.hpp>
 
 //
 // 5 4 3 2 1
@@ -19,34 +19,11 @@
 
 GamePad controller(7, 2, 3, 4, 5, 6, 8);
 
-#define PS2_CLK_PIN 1
-#define PS2_DATA_PIN 0
 
-#define SELECT_SWICH 16
-#define REC_SWICH 14
-#define PLAY_SWICH 15
-#define REW_SWICH A0
-#define FF_SWICH A1
-#define STOP_EJECT_SWICH A2
-#define PAUSE_SWICH A3
 
 
 // Crear una instancia de PS2dev para el teclado PS2pn
 PS2dev keyboard(PS2_CLK_PIN, PS2_DATA_PIN);
-
-// Scancodes para Kempston Joystick
-const int ESP_JOY1LEFT = 0x40;
-const int ESP_JOY1RIGHT = 0x41;
-const int ESP_JOY1UP = 0x42;
-const int ESP_JOY1DOWN = 0x43;
-const int ESP_JOY1START = 0x44;
-const int ESP_JOY1MODE = 0x45;
-const int ESP_JOY1A = 0x46;
-const int ESP_JOY1B = 0x47;
-const int ESP_JOY1C = 0x48;
-const int ESP_JOY1X = 0x49;
-const int ESP_JOY1Y = 0x4a;
-const int ESP_JOY1Z = 0x4b;
 
 // Controller states
 word currentState = 0;
@@ -234,17 +211,6 @@ void setup() {
     pinMode(FF_SWICH, INPUT_PULLUP);
     pinMode(STOP_EJECT_SWICH, INPUT_PULLUP);
     pinMode(PAUSE_SWICH, INPUT_PULLUP);
-
-    // int joystickType = controller.detectJoystickType();
-    // if (joystickType == 1) {
-    //     Serial.println("Sega Joystick detectado");
-    //     // Configura para Sega Joystick
-    // } else if (joystickType == 2) {
-    //     Serial.println("Amstrad Joystick detectado");
-    //     // Configura para Amstrad Joystick
-    // } else {
-    //     Serial.println("Joystick no detectado o desconocido");
-    // }
 }
 
 void loop()
