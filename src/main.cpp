@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include <GamePad.h>
 #include <ps2dev.h> 
-// Controller DB9 pins (looking face-on to the end of the plug):
+
+
 //
 // 5 4 3 2 1
 //  9 8 7 6
@@ -21,6 +22,15 @@ GamePad controller(7, 2, 3, 4, 5, 6, 8);
 #define PS2_CLK_PIN 1
 #define PS2_DATA_PIN 0
 
+#define SELECT_SWICH 16
+#define SELECT_REC 16
+#define SELECT_PLAY 16
+#define SELECT_REW 16
+#define SELECT_FF A1
+#define SELECT_STOP_EJECT A2
+#define SELECT_PAUSE A3
+
+
 // Crear una instancia de PS2dev para el teclado PS2pn
 PS2dev keyboard(PS2_CLK_PIN, PS2_DATA_PIN);
 
@@ -37,18 +47,18 @@ const int ESP_JOY1C = 0x48;
 const int ESP_JOY1X = 0x49;
 const int ESP_JOY1Y = 0x4a;
 const int ESP_JOY1Z = 0x4b;
-// const int ESP_JOY2LEFT = 0x4c;
-// const int ESP_JOY2RIGHT = 0x4d;
-// const int ESP_JOY2UP = 0x4e;
-// const int ESP_JOY2DOWN = 0x4f;
-// const int ESP_JOY2START = 0x50;
-// const int ESP_JOY2MODE = 0x51;
-// const int ESP_JOY2A = 0x52;
-// const int ESP_JOY2B = 0x53;
-// const int ESP_JOY2C = 0x54;
-// const int ESP_JOY2X = 0x55;
-// const int ESP_JOY2Y = 0x56;
-// const int ESP_JOY2Z = 0x57;
+
+// Controller states
+word currentState = 0;
+word lastState = 0;
+
+bool selectPressed = false;
+bool recPressed = false;
+bool playPressed = false;
+bool rewPressed = false;
+bool ffPressed = false;
+bool stopEjectPressed = false;
+bool pausePressed = false;
 
 void sendKeyAction(int scancode, bool press) {
   keyboard.write(0xE2);
@@ -60,10 +70,6 @@ void sendKeyAction(int scancode, bool press) {
   keyboard.write(scancode);
   delay(15);
 }
-
-// Controller states
-word currentState = 0;
-word lastState = 0;
 
 void sendState()
 {
@@ -212,138 +218,72 @@ void sendState()
     lastState = currentState;
 }
 
+
 void setup() {
     Serial.begin(9600);
 
-    int joystickType = controller.detectJoystickType();
-    if (joystickType == 1) {
-        Serial.println("Sega Joystick detectado");
-        // Configura para Sega Joystick
-    } else if (joystickType == 2) {
-        Serial.println("Amstrad Joystick detectado");
-        // Configura para Amstrad Joystick
-    } else {
-        Serial.println("Joystick no detectado o desconocido");
-    }
+    pinMode(SELECT_SWICH, INPUT_PULLUP);
+    pinMode(SELECT_REC, INPUT_PULLUP);
+    pinMode(SELECT_PLAY, INPUT_PULLUP);
+    pinMode(SELECT_REW, INPUT_PULLUP);
+    pinMode(SELECT_FF, INPUT_PULLUP);
+    pinMode(SELECT_STOP_EJECT, INPUT_PULLUP);
+    pinMode(SELECT_PAUSE, INPUT_PULLUP);
+
+    // int joystickType = controller.detectJoystickType();
+    // if (joystickType == 1) {
+    //     Serial.println("Sega Joystick detectado");
+    //     // Configura para Sega Joystick
+    // } else if (joystickType == 2) {
+    //     Serial.println("Amstrad Joystick detectado");
+    //     // Configura para Amstrad Joystick
+    // } else {
+    //     Serial.println("Joystick no detectado o desconocido");
+    // }
 }
 
 void loop()
 {
     currentState = controller.getState();
     sendState();
+
+    byte swichState = digitalRead(SELECT_SWICH);
+    if (swichState == LOW && !selectPressed) {
+        Serial.println("SELECT is pressed");
+        selectPressed = true;
+    } else if (swichState == HIGH) {
+        selectPressed = false;
+    }
+bool selectPressed = false;
+bool recPressed = false;
+bool playPressed = false;
+bool rewPressed = false;
+bool ffPressed = false;
+
+    swichState = digitalRead(SELECT_STOP_EJECT);
+    if (swichState == LOW && !stopEjectPressed) {
+        Serial.println("PAUSE is pressed");
+        stopEjectPressed = true;
+    } else if (swichState == HIGH) {
+        stopEjectPressed = false;
+    }
+
+    swichState = digitalRead(SELECT_STOP_EJECT);
+    if (swichState == LOW && !stopEjectPressed) {
+        Serial.println("PAUSE is pressed");
+        stopEjectPressed = true;
+    } else if (swichState == HIGH) {
+        stopEjectPressed = false;
+    }
+
+    swichState = digitalRead(SELECT_PAUSE);
+    if (swichState == LOW && !pausePressed) {
+        Serial.println("PAUSE is pressed");
+        pausePressed = true;
+    } else if (swichState == HIGH) {
+        pausePressed = false;
+    }
+
+    delay(100);
+
 }
-
-
-
-// #include <Arduino.h>
-// #include <GamePad.h>
-
-// // Controller DB9 pins (looking face-on to the end of the plug):
-// //
-// // 5 4 3 2 1
-// //  9 8 7 6
-// //
-// // Connect pin 5 to +5V and pin 8 to GND
-// // Connect the remaining pins to digital I/O pins (see below)
-
-// // Specify the Arduino pins that are connected to
-// // DB9 Pin 7, DB9 Pin 1, DB9 Pin 2, DB9 Pin 3, DB9 Pin 4, DB9 Pin 6, DB9 Pin 9
-// GamePad controller(8, 2, 3, 4, 5, 6, 7);
-
-// // Controller states
-// word currentState = 0;
-// word lastState = 0;
-
-// void sendState()
-// {
-//     // Solo reportar el estado del controlador si ha cambiado
-//     if (currentState != lastState)
-//     {
-//         // Verificar el cambio de estado para cada botón
-//         if (currentState & SC_BTN_UP) {
-//             Serial.println("Botón UP presionado");
-//         } else {
-//             Serial.println("Botón UP no presionado");
-//         }
-
-//         if (currentState & SC_BTN_DOWN) {
-//             Serial.println("Botón DOWN presionado");
-//         } else {
-//             Serial.println("Botón DOWN no presionado");
-//         }
-
-//         if (currentState & SC_BTN_LEFT) {
-//             Serial.println("Botón LEFT presionado");
-//         } else {
-//             Serial.println("Botón LEFT no presionado");
-//         }
-
-//         if (currentState & SC_BTN_RIGHT) {
-//             Serial.println("Botón RIGHT presionado");
-//         } else {
-//             Serial.println("Botón RIGHT no presionado");
-//         }
-
-//         if (currentState & SC_BTN_START) {
-//             Serial.println("Botón START presionado");
-//         } else {
-//             Serial.println("Botón START no presionado");
-//         }
-
-//         if (currentState & SC_BTN_A) {
-//             Serial.println("Botón A presionado");
-//         } else {
-//             Serial.println("Botón A no presionado");
-//         }
-
-//         if (currentState & SC_BTN_B) {
-//             Serial.println("Botón B presionado");
-//         } else {
-//             Serial.println("Botón B no presionado");
-//         }
-
-//         if (currentState & SC_BTN_C) {
-//             Serial.println("Botón C presionado");
-//         } else {
-//             Serial.println("Botón C no presionado");
-//         }
-
-//         if (currentState & SC_BTN_X) {
-//             Serial.println("Botón X presionado");
-//         } else {
-//             Serial.println("Botón X no presionado");
-//         }
-
-//         if (currentState & SC_BTN_Y) {
-//             Serial.println("Botón Y presionado");
-//         } else {
-//             Serial.println("Botón Y no presionado");
-//         }
-
-//         if (currentState & SC_BTN_Z) {
-//             Serial.println("Botón Z presionado");
-//         } else {
-//             Serial.println("Botón Z no presionado");
-//         }
-
-//         if (currentState & SC_BTN_MODE) {
-//             Serial.println("Botón MODE presionado");
-//         } else {
-//             Serial.println("Botón MODE no presionado");
-//         }
-
-//         // Actualizar el último estado
-//         lastState = currentState;
-//     }
-// }
-
-// void setup()
-// {
-//     Serial.begin(9600);
-// }
-
-// void loop()
-// {
-//     currentState = controller.getState();
-//     sendState();
-// }
