@@ -38,10 +38,10 @@ bool stopEjectPressed = false;
 bool pausePressed = false;
 
 void sendGamePadAction(int scancode, bool press) {
-  keyboard.write(0xE2);
+  keyboard.write(0xE2); // Prefijo para gamepad
   delay(15);
   if (!press) {
-    keyboard.write(0xF0);
+    keyboard.write(0xF0); // Código de liberación
     delay(15);
   }
   keyboard.write(scancode);
@@ -59,16 +59,36 @@ void sendKeyBoardAction(int scancode, bool press) {
   delay(15);
 }
 
+void sendSpecialKeyBoardAction(int scancode, bool press) {
+  keyboard.write(0xE0); // Prefijo para teclas especiales
+  delay(15);
+  if (!press) {
+    keyboard.write(0xF0); // Código de liberación
+    delay(15);
+  }
+  keyboard.write(scancode);
+  delay(15);
+}
+
+void EjectCassette() {
+    sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
+    delay(100);
+    sendKeyBoardAction(PS2dev::F6, true);    
+}
+
 void cassetteState() {
 
     byte swichState = digitalRead(SELECT_SWICH);
     if (swichState == LOW && !selectPressed) {
         Serial.println("SELECT is pressed");
         // sendKeyBoardAction(PS2dev::F5, true);
-        sendKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
-
+        //sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
+        sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);  // Presionar SHIFT
+        delay(100);
+        sendKeyBoardAction(PS2dev::F6, true);    
         selectPressed = true;
     } else if (swichState == HIGH) {
+        sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, false);
         selectPressed = false;
     }
 
