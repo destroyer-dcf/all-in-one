@@ -23,12 +23,12 @@ GamePad controller(7, 2, 3, 4, 5, 6, 8);
 #define PS2_DATA_PIN 0
 
 #define SELECT_SWICH 16
-#define SELECT_REC 16
-#define SELECT_PLAY 16
-#define SELECT_REW 16
-#define SELECT_FF A1
-#define SELECT_STOP_EJECT A2
-#define SELECT_PAUSE A3
+#define REC_SWICH 14
+#define PLAY_SWICH 15
+#define REW_SWICH A0
+#define FF_SWICH A1
+#define STOP_EJECT_SWICH A2
+#define PAUSE_SWICH A3
 
 
 // Crear una instancia de PS2dev para el teclado PS2pn
@@ -223,12 +223,12 @@ void setup() {
     Serial.begin(9600);
 
     pinMode(SELECT_SWICH, INPUT_PULLUP);
-    pinMode(SELECT_REC, INPUT_PULLUP);
-    pinMode(SELECT_PLAY, INPUT_PULLUP);
-    pinMode(SELECT_REW, INPUT_PULLUP);
-    pinMode(SELECT_FF, INPUT_PULLUP);
-    pinMode(SELECT_STOP_EJECT, INPUT_PULLUP);
-    pinMode(SELECT_PAUSE, INPUT_PULLUP);
+    pinMode(REC_SWICH, INPUT_PULLUP);
+    pinMode(PLAY_SWICH, INPUT_PULLUP);
+    pinMode(REW_SWICH, INPUT_PULLUP);
+    pinMode(FF_SWICH, INPUT_PULLUP);
+    pinMode(STOP_EJECT_SWICH, INPUT_PULLUP);
+    pinMode(PAUSE_SWICH, INPUT_PULLUP);
 
     // int joystickType = controller.detectJoystickType();
     // if (joystickType == 1) {
@@ -254,29 +254,48 @@ void loop()
     } else if (swichState == HIGH) {
         selectPressed = false;
     }
-bool selectPressed = false;
-bool recPressed = false;
-bool playPressed = false;
-bool rewPressed = false;
-bool ffPressed = false;
 
-    swichState = digitalRead(SELECT_STOP_EJECT);
+    swichState = digitalRead(REC_SWICH);
+    if (swichState == LOW && !recPressed) {
+        Serial.println("REC is pressed");
+        recPressed = true;
+    } else if (swichState == HIGH) {
+        recPressed = false;
+    }
+
+    swichState = digitalRead(PLAY_SWICH);
+    if (swichState == LOW && !playPressed) {
+        Serial.println("PLAY is pressed");
+        playPressed = true;
+    } else if (swichState == HIGH) {
+        playPressed = false;
+    }
+
+    swichState = digitalRead(REW_SWICH);
+    if (swichState == LOW && !rewPressed) {
+        Serial.println("FF is pressed");
+        rewPressed = true;
+    } else if (swichState == HIGH) {
+        rewPressed = false;
+    }
+
+    swichState = digitalRead(FF_SWICH);
+    if (swichState == LOW && !ffPressed) {
+        Serial.println("FF is pressed");
+        ffPressed = true;
+    } else if (swichState == HIGH) {
+        ffPressed = false;
+    }
+
+    swichState = digitalRead(STOP_EJECT_SWICH);
     if (swichState == LOW && !stopEjectPressed) {
-        Serial.println("PAUSE is pressed");
+        Serial.println("STOP is pressed");
         stopEjectPressed = true;
     } else if (swichState == HIGH) {
         stopEjectPressed = false;
     }
 
-    swichState = digitalRead(SELECT_STOP_EJECT);
-    if (swichState == LOW && !stopEjectPressed) {
-        Serial.println("PAUSE is pressed");
-        stopEjectPressed = true;
-    } else if (swichState == HIGH) {
-        stopEjectPressed = false;
-    }
-
-    swichState = digitalRead(SELECT_PAUSE);
+    swichState = digitalRead(PAUSE_SWICH);
     if (swichState == LOW && !pausePressed) {
         Serial.println("PAUSE is pressed");
         pausePressed = true;
