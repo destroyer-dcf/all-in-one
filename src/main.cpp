@@ -71,7 +71,11 @@ void sendKeyAction(int scancode, bool press) {
   delay(15);
 }
 
-void sendState()
+void cassetteState() {
+  printf("Cassette state\n");
+}
+
+void gamePadState()
 {
     // Verificar el cambio de estado para cada botón
     if ((currentState & SC_BTN_UP) != (lastState & SC_BTN_UP)) {
@@ -220,6 +224,7 @@ void sendState()
 
 
 void setup() {
+
     Serial.begin(9600);
 
     pinMode(SELECT_SWICH, INPUT_PULLUP);
@@ -245,7 +250,7 @@ void setup() {
 void loop()
 {
     currentState = controller.getState();
-    sendState();
+    gamePadState();
 
     byte swichState = digitalRead(SELECT_SWICH);
     if (swichState == LOW && !selectPressed) {
