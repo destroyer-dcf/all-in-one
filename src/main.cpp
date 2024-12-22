@@ -70,10 +70,50 @@ void sendSpecialKeyBoardAction(int scancode, bool press) {
   delay(15);
 }
 
-void EjectCassette() {
+void Eject() {
     sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
     delay(100);
     sendKeyBoardAction(PS2dev::F6, true);    
+}
+
+void Insert() {
+    sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
+    delay(100);
+    sendKeyBoardAction(PS2dev::F5, true);    
+}
+
+void Stop() {
+    sendKeyBoardAction(PS2dev::F7, true);
+}
+
+void Play() {
+    sendKeyBoardAction(PS2dev::F8, true);
+}
+void Pause() {
+    keyboard.write(0xE1);
+    delay(15);
+    keyboard.write(0x14);
+    delay(15);
+    keyboard.write(0x77);
+    delay(15);
+    keyboard.write(0xE1);
+    delay(15);
+    keyboard.write(0xF0);
+    delay(15);
+    keyboard.write(0x14);
+    delay(15);
+    keyboard.write(0xF0);
+    delay(15);
+    keyboard.write(0x77);
+    delay(15);
+}
+
+void Rew() {
+    sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::DOWN_ARROW, true);  // Presionar UP_ARROW
+}
+
+void FF() {
+    sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
 }
 
 void cassetteState() {
@@ -110,6 +150,7 @@ void cassetteState() {
 
     swichState = digitalRead(REW_SWICH);
     if (swichState == LOW && !rewPressed) {
+        Rew();
         Serial.println("FF is pressed");
         rewPressed = true;
     } else if (swichState == HIGH) {
@@ -119,6 +160,7 @@ void cassetteState() {
     swichState = digitalRead(FF_SWICH);
     if (swichState == LOW && !ffPressed) {
         Serial.println("FF is pressed");
+        FF();
         ffPressed = true;
     } else if (swichState == HIGH) {
         ffPressed = false;
@@ -135,6 +177,7 @@ void cassetteState() {
     swichState = digitalRead(PAUSE_SWICH);
     if (swichState == LOW && !pausePressed) {
         Serial.println("PAUSE is pressed");
+        Pause();
         pausePressed = true;
     } else if (swichState == HIGH) {
         pausePressed = false;
