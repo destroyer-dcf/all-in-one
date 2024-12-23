@@ -27,11 +27,15 @@ byte pinesColumnas[] = {A0,A1,A2,A3};
 char teclas[2][4] = {{'1','2','3','4'},
                      {'5','6','7','8'}};
 
-Keypad teclado1 = Keypad( makeKeymap(teclas), pinesFilas, pinesColumnas, filas, columnas); 
+Keypad cassette = Keypad( makeKeymap(teclas), pinesFilas, pinesColumnas, filas, columnas); 
 
 // Crear una instancia de PS2dev para el teclado PS2pn
 PS2dev keyboard(PS2_CLK_PIN, PS2_DATA_PIN);
+
 String selectValue = "CASSETTE";
+String Cursors = "UP-DOWN";
+String keyCapActive = "SELECT";
+
 // Controller states
 word currentState = 0;
 word lastState = 0;
@@ -93,16 +97,24 @@ void StopEject() {
     // sendKeyBoardAction(PS2dev::F6, true);    
 }
 
+void Rec() {
+    keyCapActive = "REC";
+    sendKeyBoardAction(PS2dev::F4, true);
+}   
+
 void Insert() {
+    keyCapActive = "INSERT";
     sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
     delay(100);
     sendKeyBoardAction(PS2dev::F5, true);    
 }
 
 void Play() {
+    keyCapActive = "PLAY";
     sendKeyBoardAction(PS2dev::ENTER, true);
 }
 void Pause() {
+    keyCapActive = "PAUSE";
     keyboard.write(0xE1);
     delay(15);
     keyboard.write(0x14);
@@ -122,95 +134,110 @@ void Pause() {
 }
 
 void Rew() {
+    keyCapActive = "REW";
     sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::DOWN_ARROW, true);  // Presionar UP_ARROW
 }
 
 void FF() {
+    keyCapActive = "FF";
     sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
 }
 
-void cassetteState() {
-
-    byte swichState = digitalRead(SELECT_SWICH);
-    if (swichState == LOW && !selectPressed) {
-        // Serial.println("SELECT is pressed");
-        // sendKeyBoardAction(PS2dev::F5, true);
-        //sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
-        // sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);  // Presionar SHIFT
-        // delay(100);
-        // sendKeyBoardAction(PS2dev::F6, true);    
-        if (selectValue == "CASSETTE") {
-            selectValue = "SNA";
-            Serial.println("SNA");
-        } else if (selectValue == "SNA") {
-            selectValue = "CUMSTON SNA";
-            Serial.println("CUMSTON SNA");
-        } else if (selectValue == "CUMSTON SNA") {
-            selectValue = "RAPIDA";
-            Serial.println("RAPIDA");
-        } else if (selectValue == "RAPIDA") {
-            selectValue = "CASSETTE";
-            Serial.println("CASSETTE");
-        }
-        selectPressed = true;
-    } else if (swichState == HIGH) {
-        sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, false);
-        selectPressed = false;
+void select() {
+    if (selectValue == "CASSETTE") {
+        selectValue = "SNA";
+    } else if (selectValue == "SNA") {
+        selectValue = "CUMSTON SNA";
+    } else if (selectValue == "CUMSTON SNA") {
+        selectValue = "RAPIDA";
+    } else if (selectValue == "RAPIDA") {
+        selectValue = "CASSETTE";
     }
-
-    swichState = digitalRead(REC_SWICH);
-    if (swichState == LOW && !recPressed) {
-        Serial.println("REC is pressed");
-        recPressed = true;
-    } else if (swichState == HIGH) {
-        recPressed = false;
-    }
-
-    swichState = digitalRead(PLAY_SWICH);
-    if (swichState == LOW && !playPressed) {
-        Serial.println("PLAY is pressed");
-        Play();
-        playPressed = true;
-    } else if (swichState == HIGH) {
-        playPressed = false;
-    }
-
-    swichState = digitalRead(REW_SWICH);
-    if (swichState == LOW && !rewPressed) {
-        Rew();
-        Serial.println("FF is pressed");
-        rewPressed = true;
-    } else if (swichState == HIGH) {
-        rewPressed = false;
-    }
-
-    swichState = digitalRead(FF_SWICH);
-    if (swichState == LOW && !ffPressed) {
-        Serial.println("FF is pressed");
-        FF();
-        ffPressed = true;
-    } else if (swichState == HIGH) {
-        ffPressed = false;
-    }
-
-    swichState = digitalRead(STOP_EJECT_SWICH);
-    if (swichState == LOW && !stopEjectPressed) {
-        Serial.println("STOP is pressed");
-        StopEject();
-        stopEjectPressed = true;
-    } else if (swichState == HIGH) {
-        stopEjectPressed = false;
-    }
-
-    swichState = digitalRead(PAUSE_SWICH);
-    if (swichState == LOW && !pausePressed) {
-        Serial.println("PAUSE is pressed");
-        Pause();
-        pausePressed = true;
-    } else if (swichState == HIGH) {
-        pausePressed = false;
-    }
+    Serial.println("--- " + selectValue + " SELECTED");
 }
+
+// void cassetteState() {
+
+    //swichState = digitalRead(SELECT_SWICH);
+    // if (swichState == LOW && !selectPressed) {
+    //     // Serial.println("SELECT is pressed");
+    //     // sendKeyBoardAction(PS2dev::F5, true);
+    //     //sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
+    //     // sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);  // Presionar SHIFT
+    //     // delay(100);
+    //     // sendKeyBoardAction(PS2dev::F6, true);    
+    //     if (selectValue == "CASSETTE") {
+    //         selectValue = "SNA";
+    //         Serial.println("SNA " + selectValue);
+    //     } else if (selectValue == "SNA") {
+    //         selectValue = "CUMSTON SNA";
+    //         Serial.println("CUMSTON SNA");
+    //     } else if (selectValue == "CUMSTON SNA") {
+    //         selectValue = "RAPIDA";
+    //         Serial.println("RAPIDA");
+    //     } else if (selectValue == "RAPIDA") {
+    //         selectValue = "CASSETTE";
+    //         Serial.println("CASSETTE");
+    //     }
+    //     selectPressed = true;
+    // } else if (swichState == HIGH) {
+    //     sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, false);
+    //     selectPressed = false;
+    // }
+
+//     byte swichState = digitalRead(REC_SWICH);
+//     if (swichState == LOW && !recPressed) {
+//         Serial.println("REC is pressed");
+//         recPressed = true;
+//     } else if (swichState == HIGH) {
+//         recPressed = false;
+//     }
+
+//     swichState = digitalRead(PLAY_SWICH);
+//     if (swichState == LOW && !playPressed) {
+//         Serial.println("PLAY is pressed");
+//         Play();
+//         playPressed = true;
+//     } else if (swichState == HIGH) {
+//         playPressed = false;
+//     }
+
+//     swichState = digitalRead(REW_SWICH);
+//     if (swichState == LOW && !rewPressed) {
+//         Rew();
+//         Serial.println("FF is pressed");
+//         rewPressed = true;
+//     } else if (swichState == HIGH) {
+//         rewPressed = false;
+//     }
+
+//     swichState = digitalRead(FF_SWICH);
+//     if (swichState == LOW && !ffPressed) {
+//         Serial.println("FF is pressed");
+//         FF();
+//         ffPressed = true;
+//     } else if (swichState == HIGH) {
+//         ffPressed = false;
+//     }
+
+//     swichState = digitalRead(STOP_EJECT_SWICH);
+//     if (swichState == LOW && !stopEjectPressed) {
+//         Serial.println("STOP is pressed");
+//         StopEject();
+//         stopEjectPressed = true;
+//     } else if (swichState == HIGH) {
+//         stopEjectPressed = false;
+//     }
+
+//     swichState = digitalRead(PAUSE_SWICH);
+//     if (swichState == LOW && !pausePressed) {
+//         Serial.println("PAUSE is pressed");
+//         Pause();
+//         pausePressed = true;
+//     } else if (swichState == HIGH) {
+//         pausePressed = false;
+//     }
+// }
 
 void gamePadState()
 {
@@ -375,43 +402,34 @@ void setup() {
 
 void loop()
 {
-    char tecla_presionada = teclado1.getKey();
+    char cassetteSwich = cassette.getKey();
     currentState = controller.getState();
     gamePadState();
-    // cassetteState();
-    // delay(100);
-    switch (tecla_presionada) {
-        case '1':
-            // Acción para la tecla '1'
-            Serial.println("Acción para la tecla 1");
+
+    switch (cassetteSwich) {
+        case '1': // SELECT
+            select();
             break;
-        case '2':
-            // Acción para la tecla '2'
-            Serial.println("Acción para la tecla 2");
+        case '2': // REC
+            Rec();
             break;
-        case '3':
-            // Acción para la tecla '3'
-            Serial.println("Acción para la tecla 3");
+        case '3': // PLAY
+            Play();
             break;
-        case '4':
-            // Acción para la tecla '4'
-            Serial.println("Acción para la tecla 4");
+        case '4': // REW
+            Rew();
             break;
-        case '5':
-            // Acción para la tecla '5'
-            Serial.println("Acción para la tecla 5");
+        case '5': // FF
+            FF();
             break;
-        case '6':
+        case '6': // STOP/EJECT
             // Acción para la tecla '6'
             Serial.println("Acción para la tecla 6");
             break;
-        case '7':
-            // Acción para la tecla '7'
-            Serial.println("Acción para la tecla 7");
+        case '7': // PAUSE
+            Pause();
             break;
-        case '8':
-            // Acción para la tecla '8'
-            Serial.println("Acción para la tecla 8");
+        case '8': // NADA DE NADA
             break;
     }
 }
