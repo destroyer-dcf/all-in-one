@@ -2,6 +2,7 @@
 #include <GamePad.h>
 #include <ps2dev.h> 
 #include <config.hpp>
+#include <Keypad.h>
 
 //
 // 5 4 3 2 1
@@ -19,8 +20,14 @@
 
 GamePad controller(7, 2, 3, 4, 5, 6, 8);
 
+const byte filas = 2; 
+const byte columnas = 4;
+byte pinesFilas[]  = {10,16};
+byte pinesColumnas[] = {A0,A1,A2,A3};
+char teclas[2][4] = {{'1','2','3','4'},
+                     {'5','6','7','8'}};
 
-
+Keypad teclado1 = Keypad( makeKeymap(teclas), pinesFilas, pinesColumnas, filas, columnas); 
 
 // Crear una instancia de PS2dev para el teclado PS2pn
 PS2dev keyboard(PS2_CLK_PIN, PS2_DATA_PIN);
@@ -357,20 +364,54 @@ void setup() {
 
     Serial.begin(9600);
 
-    pinMode(SELECT_SWICH, INPUT_PULLUP);
-    pinMode(REC_SWICH, INPUT_PULLUP);
-    pinMode(PLAY_SWICH, INPUT_PULLUP);
-    pinMode(REW_SWICH, INPUT_PULLUP);
-    pinMode(FF_SWICH, INPUT_PULLUP);
-    pinMode(STOP_EJECT_SWICH, INPUT_PULLUP);
-    pinMode(PAUSE_SWICH, INPUT_PULLUP);
+    // pinMode(SELECT_SWICH, INPUT_PULLUP);
+    // pinMode(REC_SWICH, INPUT_PULLUP);
+    // pinMode(PLAY_SWICH, INPUT_PULLUP);
+    // pinMode(REW_SWICH, INPUT_PULLUP);
+    // pinMode(FF_SWICH, INPUT_PULLUP);
+    // pinMode(STOP_EJECT_SWICH, INPUT_PULLUP);
+    // pinMode(PAUSE_SWICH, INPUT_PULLUP);
 }
 
 void loop()
 {
+    char tecla_presionada = teclado1.getKey();
     currentState = controller.getState();
     gamePadState();
-    cassetteState();
-    delay(100);
-
+    // cassetteState();
+    // delay(100);
+    switch (tecla_presionada) {
+        case '1':
+            // Acción para la tecla '1'
+            Serial.println("Acción para la tecla 1");
+            break;
+        case '2':
+            // Acción para la tecla '2'
+            Serial.println("Acción para la tecla 2");
+            break;
+        case '3':
+            // Acción para la tecla '3'
+            Serial.println("Acción para la tecla 3");
+            break;
+        case '4':
+            // Acción para la tecla '4'
+            Serial.println("Acción para la tecla 4");
+            break;
+        case '5':
+            // Acción para la tecla '5'
+            Serial.println("Acción para la tecla 5");
+            break;
+        case '6':
+            // Acción para la tecla '6'
+            Serial.println("Acción para la tecla 6");
+            break;
+        case '7':
+            // Acción para la tecla '7'
+            Serial.println("Acción para la tecla 7");
+            break;
+        case '8':
+            // Acción para la tecla '8'
+            Serial.println("Acción para la tecla 8");
+            break;
+    }
 }
