@@ -24,7 +24,7 @@ GamePad controller(7, 2, 3, 4, 5, 6, 8);
 
 // Crear una instancia de PS2dev para el teclado PS2pn
 PS2dev keyboard(PS2_CLK_PIN, PS2_DATA_PIN);
-
+String selectValue = "CASSETTE";
 // Controller states
 word currentState = 0;
 word lastState = 0;
@@ -70,10 +70,20 @@ void sendSpecialKeyBoardAction(int scancode, bool press) {
   delay(15);
 }
 
-void Eject() {
-    sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
-    delay(100);
-    sendKeyBoardAction(PS2dev::F6, true);    
+void StopEject() {
+    if (selectValue == "CASSETTE") {
+        sendKeyBoardAction(PS2dev::F5, true);
+    } else if (selectValue == "SNA") {
+        sendKeyBoardAction(PS2dev::F2, true);
+    } else if (selectValue == "CUMSTON SNA") {
+        sendKeyBoardAction(PS2dev::F3, true);
+    } else if (selectValue == "RAPIDA") {
+        sendKeyBoardAction(PS2dev::F4, true);
+    }
+    // sendKeyBoardAction(PS2dev::F5, true);
+    // sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
+    // delay(100);
+    // sendKeyBoardAction(PS2dev::F6, true);    
 }
 
 void Insert() {
@@ -82,12 +92,8 @@ void Insert() {
     sendKeyBoardAction(PS2dev::F5, true);    
 }
 
-void Stop() {
-    sendKeyBoardAction(PS2dev::F7, true);
-}
-
 void Play() {
-    sendKeyBoardAction(PS2dev::F8, true);
+    sendKeyBoardAction(PS2dev::ENTER, true);
 }
 void Pause() {
     keyboard.write(0xE1);
@@ -120,12 +126,25 @@ void cassetteState() {
 
     byte swichState = digitalRead(SELECT_SWICH);
     if (swichState == LOW && !selectPressed) {
-        Serial.println("SELECT is pressed");
+        // Serial.println("SELECT is pressed");
         // sendKeyBoardAction(PS2dev::F5, true);
         //sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
-        sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);  // Presionar SHIFT
-        delay(100);
-        sendKeyBoardAction(PS2dev::F6, true);    
+        // sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);  // Presionar SHIFT
+        // delay(100);
+        // sendKeyBoardAction(PS2dev::F6, true);    
+        if (selectValue == "CASSETTE") {
+            selectValue = "SNA";
+            Serial.println("SNA");
+        } else if (selectValue == "SNA") {
+            selectValue = "CUMSTON SNA";
+            Serial.println("CUMSTON SNA");
+        } else if (selectValue == "CUMSTON SNA") {
+            selectValue = "RAPIDA";
+            Serial.println("RAPIDA");
+        } else if (selectValue == "RAPIDA") {
+            selectValue = "CASSETTE";
+            Serial.println("CASSETTE");
+        }
         selectPressed = true;
     } else if (swichState == HIGH) {
         sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, false);
@@ -143,6 +162,7 @@ void cassetteState() {
     swichState = digitalRead(PLAY_SWICH);
     if (swichState == LOW && !playPressed) {
         Serial.println("PLAY is pressed");
+        Play();
         playPressed = true;
     } else if (swichState == HIGH) {
         playPressed = false;
@@ -169,6 +189,7 @@ void cassetteState() {
     swichState = digitalRead(STOP_EJECT_SWICH);
     if (swichState == LOW && !stopEjectPressed) {
         Serial.println("STOP is pressed");
+        StopEject();
         stopEjectPressed = true;
     } else if (swichState == HIGH) {
         stopEjectPressed = false;
