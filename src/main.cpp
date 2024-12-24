@@ -3,16 +3,16 @@
 #include <ps2dev.h> 
 #include <config.hpp>
 #include <Keypad.h>
+#include <OLED_I2C.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
-
-
-
-//
+// GAMEPAD
 // 5 4 3 2 1
 //  9 8 7 6
 
-// DB9 Pin 1 --> Arduino Pin 2
-// DB9 Pin 2 --> Arduino Pin 3
+// DB9 Pin 1 --> Arduino Pin 15
+// DB9 Pin 2 --> Arduino Pin 14
 // DB9 Pin 3 --> Arduino Pin 4
 // DB9 Pin 4 --> Arduino Pin 5
 // DB9 Pin 5 --> Arduino +5V
@@ -23,6 +23,14 @@
 
 GamePad controller(7, 15, 14, 4, 5, 6, 8);
 
+// OLED
+OLED  myOLED(SDA, SCL);
+extern uint8_t SmallFont[]; //Tipo de letra
+
+//LCD
+LiquidCrystal_I2C lcd(0x27,20,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+// Definir el teclado de la cinta
 const byte filas = 2; 
 const byte columnas = 4;
 byte pinesFilas[]  = {10,16};
@@ -32,24 +40,112 @@ char teclas[2][4] = {{'1','2','3','4'},
 
 Keypad cassette = Keypad( makeKeymap(teclas), pinesFilas, pinesColumnas, filas, columnas); 
 
-// Crear una instancia de PS2dev para el teclado PS2pn
+// Crear una instancia de PS2dev para el teclado PS2
 PS2dev keyboard(PS2_CLK_PIN, PS2_DATA_PIN);
 
 String selectValue = "CASSETTE";
 String Cursors = "UP-DOWN";
 String keyCapActive = "SELECT";
+String HardwareDisplay = "OLED"; //OLED O LCD
 
-// Controller states
+
+byte esquina_izquierda[] = {
+  B00111,
+  B01000,
+  B10010,
+  B10000,
+  B10001,
+  B10001,
+  B10001,
+  B10001
+};
+
+byte linea[] = {
+  B11111,
+  B00000,
+  B00000,
+  B00000,
+  B11111,
+  B00000,
+  B00000,
+  B00000
+};
+
+byte vertical[] = {
+  B10001,
+  B10001,
+  B10001,
+  B10001,
+  B10001,
+  B10001,
+  B10001,
+  B10001
+};
+
+byte topLeft[] = {
+  B00000,
+  B01110,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111
+};
+
+byte topRight[] = {
+  B00000,
+  B01110,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111
+};
+
+byte bottomLeft[] = {
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B01110,
+  B00000
+};
+
+byte bottomRight[] = {
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B01110,
+  B00000
+};
+
+byte middle[] = {
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111,
+  B11111
+};
+
+// Controller states Joystick
 word currentState = 0;
 word lastState = 0;
 
-bool selectPressed = false;
-bool recPressed = false;
-bool playPressed = false;
-bool rewPressed = false;
-bool ffPressed = false;
-bool stopEjectPressed = false;
-bool pausePressed = false;
+void displayTextOLED(const String& text) {
+    myOLED.clrScr();
+    myOLED.print(text, 65, 8);
+    myOLED.update();
+}
 
 void sendGamePadAction(int scancode, bool press) {
   keyboard.write(0xE2); // Prefijo para gamepad
@@ -114,7 +210,7 @@ void Insert() {
 
 void Play() {
     keyCapActive = "PLAY";
-    sendKeyBoardAction(PS2dev::ENTER, true);
+    sendKeyBoardAction(PS2dev::F6, true);
 }
 void Pause() {
     keyCapActive = "PAUSE";
@@ -149,6 +245,7 @@ void FF() {
 void select() {
     if (selectValue == "CASSETTE") {
         selectValue = "SNA";
+
     } else if (selectValue == "SNA") {
         selectValue = "CUMSTON SNA";
     } else if (selectValue == "CUMSTON SNA") {
@@ -156,7 +253,13 @@ void select() {
     } else if (selectValue == "RAPIDA") {
         selectValue = "CASSETTE";
     }
+
     Serial.println("--- " + selectValue + " SELECTED");
+
+    if (HardwareDisplay == "OLED") {
+        displayTextOLED(selectValue);
+    }
+
 }
 
 void gamePadState()
@@ -307,13 +410,73 @@ void gamePadState()
 }
 
 
+
 void setup() {
     Serial.begin(9600);
+    if (HardwareDisplay == "OLED") {
+        myOLED.begin(SSD1306_128X32);
+        myOLED.setBrightness(255);
+        myOLED.rotateDisplay(true);
+        myOLED.setFont(SmallFont);
+        displayTextOLED("  SNAPSHOT");
+    }
+    if (HardwareDisplay == "LCD") {
+        lcd.init();                      // initialize the lcd 
+        lcd.backlight();
+        // lcd.print("SNAPSHOT");
+        lcd.createChar (0,esquina_izquierda);
+        lcd.createChar (1,linea);
+        lcd.createChar (2,vertical);
+        lcd.setCursor(0, 0);
+        lcd.write (byte (0));
+        lcd.setCursor(1, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(2, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(3, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(4, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(5, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(6, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(7, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(8, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(9, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(10, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(11, 0);
+        lcd.write (byte (1));
+        lcd.setCursor(0, 2);
+        lcd.write (byte (2));
+        lcd.setCursor(0, 1);
+        lcd.write (byte (2));
+        lcd.setCursor(0, 3);
+        lcd.write (byte (2));
+    lcd.createChar(3, topLeft); // Cargar el carácter personalizado en la posición 3
+    lcd.createChar(4, topRight); // Cargar el carácter personalizado en la posición 4
+    lcd.createChar(5, bottomLeft); // Cargar el carácter personalizado en la posición 5
+    lcd.createChar(6, bottomRight); // Cargar el carácter personalizado en la posición 6
+    lcd.createChar(7, middle); 
+    lcd.setCursor(2, 2);
+    lcd.write(byte(3)); // topLeft
+    lcd.write(byte(7)); // middle
+    lcd.write(byte(4)); // topRight
+
+    // Dibujar la parte inferior del círculo
+    lcd.setCursor(2, 3);
+    lcd.write(byte(5)); // bottomLeft
+    lcd.write(byte(7)); // middle
+    lcd.write(byte(6)); // bottomRight
+    }
 }
 
 void loop()
 {
-
 
     char cassetteSwich = cassette.getKey();
     currentState = controller.getState();
