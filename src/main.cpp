@@ -3,22 +3,8 @@
 #include <ps2dev.h> 
 #include <config.hpp>
 #include <Keypad.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
 
 
-// #define SCREEN_WIDTH 128 // OLED display width, in pixels
-// #define SCREEN_HEIGHT 32 // OLED display height, in pixels
-
-// // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-// // The pins for I2C are defined by the Wire-library. 
-// // On an arduino UNO:       A4(SDA), A5(SCL)
-// // On an arduino MEGA 2560: 20(SDA), 21(SCL)
-// // On an arduino LEONARDO:   2(SDA),  3(SCL), ...
-// #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-// #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 //
@@ -173,89 +159,6 @@ void select() {
     Serial.println("--- " + selectValue + " SELECTED");
 }
 
-// void cassetteState() {
-
-    //swichState = digitalRead(SELECT_SWICH);
-    // if (swichState == LOW && !selectPressed) {
-    //     // Serial.println("SELECT is pressed");
-    //     // sendKeyBoardAction(PS2dev::F5, true);
-    //     //sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
-    //     // sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);  // Presionar SHIFT
-    //     // delay(100);
-    //     // sendKeyBoardAction(PS2dev::F6, true);    
-    //     if (selectValue == "CASSETTE") {
-    //         selectValue = "SNA";
-    //         Serial.println("SNA " + selectValue);
-    //     } else if (selectValue == "SNA") {
-    //         selectValue = "CUMSTON SNA";
-    //         Serial.println("CUMSTON SNA");
-    //     } else if (selectValue == "CUMSTON SNA") {
-    //         selectValue = "RAPIDA";
-    //         Serial.println("RAPIDA");
-    //     } else if (selectValue == "RAPIDA") {
-    //         selectValue = "CASSETTE";
-    //         Serial.println("CASSETTE");
-    //     }
-    //     selectPressed = true;
-    // } else if (swichState == HIGH) {
-    //     sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, false);
-    //     selectPressed = false;
-    // }
-
-//     byte swichState = digitalRead(REC_SWICH);
-//     if (swichState == LOW && !recPressed) {
-//         Serial.println("REC is pressed");
-//         recPressed = true;
-//     } else if (swichState == HIGH) {
-//         recPressed = false;
-//     }
-
-//     swichState = digitalRead(PLAY_SWICH);
-//     if (swichState == LOW && !playPressed) {
-//         Serial.println("PLAY is pressed");
-//         Play();
-//         playPressed = true;
-//     } else if (swichState == HIGH) {
-//         playPressed = false;
-//     }
-
-//     swichState = digitalRead(REW_SWICH);
-//     if (swichState == LOW && !rewPressed) {
-//         Rew();
-//         Serial.println("FF is pressed");
-//         rewPressed = true;
-//     } else if (swichState == HIGH) {
-//         rewPressed = false;
-//     }
-
-//     swichState = digitalRead(FF_SWICH);
-//     if (swichState == LOW && !ffPressed) {
-//         Serial.println("FF is pressed");
-//         FF();
-//         ffPressed = true;
-//     } else if (swichState == HIGH) {
-//         ffPressed = false;
-//     }
-
-//     swichState = digitalRead(STOP_EJECT_SWICH);
-//     if (swichState == LOW && !stopEjectPressed) {
-//         Serial.println("STOP is pressed");
-//         StopEject();
-//         stopEjectPressed = true;
-//     } else if (swichState == HIGH) {
-//         stopEjectPressed = false;
-//     }
-
-//     swichState = digitalRead(PAUSE_SWICH);
-//     if (swichState == LOW && !pausePressed) {
-//         Serial.println("PAUSE is pressed");
-//         Pause();
-//         pausePressed = true;
-//     } else if (swichState == HIGH) {
-//         pausePressed = false;
-//     }
-// }
-
 void gamePadState()
 {
     // Verificar el cambio de estado para cada botón
@@ -405,25 +308,13 @@ void gamePadState()
 
 
 void setup() {
-
     Serial.begin(9600);
-    // display.clearDisplay();
-    // display.setTextSize(2);             // Normal 1:1 pixel scale
-    // display.setTextColor(SSD1306_WHITE);        // Draw white text
-    // display.setCursor(0,0);             // Start at top-left corner
-    // display.println("hola mundo");
-    // display.display();
-    // pinMode(SELECT_SWICH, INPUT_PULLUP);
-    // pinMode(REC_SWICH, INPUT_PULLUP);
-    // pinMode(PLAY_SWICH, INPUT_PULLUP);
-    // pinMode(REW_SWICH, INPUT_PULLUP);
-    // pinMode(FF_SWICH, INPUT_PULLUP);
-    // pinMode(STOP_EJECT_SWICH, INPUT_PULLUP);
-    // pinMode(PAUSE_SWICH, INPUT_PULLUP);
 }
 
 void loop()
 {
+
+
     char cassetteSwich = cassette.getKey();
     currentState = controller.getState();
     gamePadState();
