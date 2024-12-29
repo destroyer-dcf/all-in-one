@@ -38,10 +38,8 @@ Keypad keypad = Keypad( makeKeymap(teclas), pinesFilas, pinesColumnas, filas, co
 // Crear una instancia de PS2dev para el teclado PS2
 PS2dev keyboard(PS2_CLK_PIN, PS2_DATA_PIN);
 
-String selectValue = "CASSETTE";
-String Cursors = "UP-DOWN";
+int selectValue = 0;
 String keyCapActive = "SELECT";
-String HardwareDisplay = "OLED"; //OLED O LCD
 
 // Controller states Joystick
 word currentState = 0;
@@ -75,6 +73,19 @@ void sendKeyBoardAction(int scancode, bool press) {
   delay(15);
 }
 
+void sendKeyBoardAction2(int scancode, bool press) {
+  if (press) {
+    keyboard.write(scancode);
+  } else {
+    keyboard.write(0xF0); // Código de liberación
+    delay(15);
+    keyboard.write(scancode);
+  }
+  delay(180);
+}
+
+
+
 void sendSpecialKeyBoardAction(int scancode, bool press) {
   keyboard.write(0xE0); // Prefijo para teclas especiales
   delay(15);
@@ -85,30 +96,48 @@ void sendSpecialKeyBoardAction(int scancode, bool press) {
   keyboard.write(scancode);
   delay(15);
 }
-
-void StopEject() {
-    if (selectValue == "CASSETTE") {
-        sendKeyBoardAction(PS2dev::F5, true);
-    } else if (selectValue == "SNA") {
-        sendKeyBoardAction(PS2dev::F2, true);
-    } else if (selectValue == "CUMSTON SNA") {
-        sendKeyBoardAction(PS2dev::F3, true);
-    } else if (selectValue == "RAPIDA") {
-        sendKeyBoardAction(PS2dev::F4, true);
-    }
-    // sendKeyBoardAction(PS2dev::F5, true);
-    // sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
-    // delay(100);
-    // sendKeyBoardAction(PS2dev::F6, true);    
+void sendSpecialKeyBoardAction2(int scancode, bool press) {
+  keyboard.write(0xE0); // Prefijo para teclas especiales
+  delay(15);
+  if (!press) {
+    keyboard.write(0xF0); // Código de liberación
+    delay(15);
+  }
+  keyboard.write(scancode);
+  delay(100);
 }
+void sendControlEnter() {
+  // Presionar la tecla CONTROL
+  sendSpecialKeyBoardAction2(PS2dev::SpecialScanCodes::RIGHT_CONTROL, true);
+  sendSpecialKeyBoardAction2(PS2dev::SpecialScanCodes::NUMPAD_ENTER, true);
+  sendSpecialKeyBoardAction2(PS2dev::SpecialScanCodes::NUMPAD_ENTER, false);
+  sendSpecialKeyBoardAction2(PS2dev::SpecialScanCodes::RIGHT_CONTROL, false);
+}
+
+// void StopEject() {
+//     if (selectValue == "CASSETTE") {
+//         sendKeyBoardAction(PS2dev::F5, true);
+//     } else if (selectValue == "SNA") {
+//         sendKeyBoardAction(PS2dev::F2, true);
+//     } else if (selectValue == "CUSMTON SNA") {
+//         sendKeyBoardAction(PS2dev::F3, true);
+//     } else if (selectValue == "RAPIDA") {
+//         sendKeyBoardAction(PS2dev::F4, true);
+//     }
+//     // sendKeyBoardAction(PS2dev::F5, true);
+//     // sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
+//     // delay(100);
+//     // sendKeyBoardAction(PS2dev::F6, true);    
+// }
 
 
 void Insert() {
     keyCapActive = "INSERT";
-    sendKeyBoardAction(PS2dev::LEFT_SHIFT, true);
+    sendKeyBoardAction(PS2dev::LEFT_CONTROL, true);  // Presionar la tecla DOWN_ARROW
     delay(100);
-    sendKeyBoardAction(PS2dev::F5, true);    
+    sendKeyBoardAction(PS2dev::ENTER, true);    
 }
+
 
 
 void gamePadState()
@@ -259,45 +288,45 @@ void gamePadState()
 }
 
 void paintTape() {
-    myOLED.drawBitmap(10, 28, cassette32, 32, 32);
-    myOLED.print("      ", 11, 22);
-    myOLED.print("N", 24, 22);
-    myOLED.drawLine(10,26,22,26);
-    myOLED.drawLine(32,26,42,26);
+    myOLED.drawBitmap(10, 26, cassette32, 32, 32);
+    // myOLED.print("      ", 11, 22);
+    // myOLED.print("N", 24, 22);
+    // myOLED.drawLine(10,26,22,26);
+    // myOLED.drawLine(32,26,42,26);
     myOLED.update();
 }
 
-void paintTapeRapid() {
-    myOLED.drawBitmap(10, 28, cassette32, 32, 32);
-    myOLED.print("      ", 11, 22);
-    myOLED.print("R", 24, 22);
-    myOLED.drawLine(10,26,22,26);
-    myOLED.drawLine(32,26,42,26);
-    myOLED.update();
-}
+// void paintTapeRapid() {
+//     myOLED.drawBitmap(10, 28, cassette32, 32, 32);
+//     myOLED.print("      ", 11, 22);
+//     myOLED.print("R", 24, 22);
+//     myOLED.drawLine(10,26,22,26);
+//     myOLED.drawLine(32,26,42,26);
+//     myOLED.update();
+// }
 
 void paintSnap() {
-    myOLED.drawBitmap(10, 30, snapshot32, 32, 29);
-    myOLED.print("SNAP", 11, 22);
+    myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
+    // myOLED.print("SNAP", 11, 22);
     myOLED.update();
 }
 
-void paintSnapCumston() {
-    myOLED.drawBitmap(10, 30, snapshot32, 32, 29);
-    myOLED.print("SNAP", 11, 22);
-    myOLED.print("C", 23, 53);
+void paintSnapCusmton() {
+    myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
+    // myOLED.print("SNAP", 11, 22);
+    myOLED.print("C", 23, 51);
     myOLED.update();
 }
 
 void paintJoystick() {
-    myOLED.drawBitmap(85, 28, joystick32, 32, 29);
+    myOLED.drawBitmap(85, 26, joystick32, 32, 29);
     // myOLED.print("JOY", 90, 22);
     myOLED.update();
 }
 
 void paintMouse() {
-    myOLED.drawBitmap(85, 30, mouse32, 32, 29);
-    myOLED.print("MOUSE", 86, 22);
+    myOLED.drawBitmap(85, 26, mouse32, 32, 29);
+    // myOLED.print("MOUSE", 86, 22);
     myOLED.update();
 }
 
@@ -356,60 +385,60 @@ void sendKeyEsc() {
   sendKeyBoardAction(PS2dev::ESCAPE, false); // Liberar la tecla ESC
 }
 
-void selectRapidLoad() {
-    sendKeyF1();
-    sendKeyDown();
-    sendKeyDown();
-    sendKeyDown();
-    sendKeyDown();
-    sendKeyEnter();
-    sendKeyEnter();
-    sendKeyDown();
-    sendKeyEnter();
-    // //Estando en No para si 
-    sendKeyUp();
-    sendKeyEnter();
+// void selectRapidLoad() {
+//     sendKeyF1();
+//     sendKeyDown();
+//     sendKeyDown();
+//     sendKeyDown();
+//     sendKeyDown();
+//     sendKeyEnter();
+//     sendKeyEnter();
+//     sendKeyDown();
+//     sendKeyEnter();
+//     // //Estando en No para si 
+//     sendKeyUp();
+//     sendKeyEnter();
 
-    // Estando en SI para NO
-    // sendKeyDown();
-    // sendKeyEnter();  
-    sendKeyEsc();
-    sendKeyEsc();
-    sendKeyEsc();
-    sendKeyEsc();
-}
+//     // Estando en SI para NO
+//     // sendKeyDown();
+//     // sendKeyEnter();  
+//     sendKeyEsc();
+//     sendKeyEsc();
+//     sendKeyEsc();
+//     sendKeyEsc();
+// }
 
-void selectNormalLoad() {
-    sendKeyF1();
-    sendKeyDown();
-    sendKeyDown();
-    sendKeyDown();
-    sendKeyDown();
-    sendKeyEnter();
-    sendKeyEnter();
-    sendKeyDown();
-    sendKeyEnter();
-    // //Estando en No para si 
-    // sendKeyUp();
-    // sendKeyEnter();
+// void selectNormalLoad() {
+//     sendKeyF1();
+//     sendKeyDown();
+//     sendKeyDown();
+//     sendKeyDown();
+//     sendKeyDown();
+//     sendKeyEnter();
+//     sendKeyEnter();
+//     sendKeyDown();
+//     sendKeyEnter();
+//     // //Estando en No para si 
+//     // sendKeyUp();
+//     // sendKeyEnter();
 
-    // Estando en SI para NO
-    sendKeyDown();
-    sendKeyEnter();  
-    sendKeyEsc();
-    sendKeyEsc();
-    sendKeyEsc();
-    sendKeyEsc();
-}
+//     // Estando en SI para NO
+//     sendKeyDown();
+//     sendKeyEnter();  
+//     sendKeyEsc();
+//     sendKeyEsc();
+//     sendKeyEsc();
+//     sendKeyEsc();
+// }
 
 // void select() {
 //     if (selectValue == "CASSETTE") {
 //         selectValue = "SNA";
 //         paintSnap();
 //     } else if (selectValue == "SNA") {
-//         selectValue = "CUMSTON SNA";
-//         paintSnapCumston();
-//     } else if (selectValue == "CUMSTON SNA") {
+//         selectValue = "CUSMTON SNA";
+//         paintSnapCusmton();
+//     } else if (selectValue == "CUSMTON SNA") {
 //         selectValue = "CASSETTE";
 //         selectNormalLoad();
 //         paintTape();
@@ -417,27 +446,44 @@ void selectNormalLoad() {
 
 //     Serial.println("--- " + selectValue + " SELECTED");
 // }
-void select() {
-    if (selectValue == "CASSETTE") {
-        selectValue = "SNA";
-        paintSnap();
-    } else if (selectValue == "SNA") {
-        selectValue = "CUMSTON SNA";
-        paintSnapCumston();
-    } else if (selectValue == "CUMSTON SNA") {
-        selectValue = "RAPID";
-        selectNormalLoad();
-        paintTapeRapid();
-    } else if (selectValue == "RAPID") {
-        selectValue = "CASSETTE";
+// void select() {
+//     if (selectValue == "CASSETTE") {
+//         selectValue = "SNA";
+//         paintSnap();
+//     } else if (selectValue == "SNA") {
+//         selectValue = "CUSMTON SNA";
+//         paintSnapCusmton();
+//     } else if (selectValue == "CUSMTON SNA") {
+//         selectValue = "RAPID";
+//         selectNormalLoad();
+//         paintTapeRapid();
+//     } else if (selectValue == "RAPID") {
+//         selectValue = "CASSETTE";
         
-        paintTapeRapid();
-        paintTape();
+//         paintTapeRapid();
+//         paintTape();
+//     }
+
+//     Serial.println("--- " + selectValue + " SELECTED");
+// }
+void select() {
+    selectValue = (selectValue + 1) % 3; // Incrementar y ciclar entre 0 y 2
+
+    switch (selectValue) {
+        case 0:
+            paintTape();
+            Serial.println("--- CASSETTE SELECTED, Value: " + String(selectValue));
+            break;
+        case 1:
+            paintSnap();
+            Serial.println("--- SNA SELECTED, Value: " + String(selectValue));
+            break;
+        case 2:
+            paintSnapCusmton();
+            Serial.println("--- CUSMTON SNA SELECTED, Value: " + String(selectValue));
+            break;
     }
-
-    Serial.println("--- " + selectValue + " SELECTED");
 }
-
 
 void keypadEvent(KeypadEvent key){
     switch (keypad.getState()){
@@ -468,7 +514,13 @@ void keypadEvent(KeypadEvent key){
                     break;
                 case '6': // STOP/EJECT
                     // Acción para la tecla '6'
-                    Serial.println("Acción para la tecla 6");
+                    if (selectValue == 0) {
+                        sendKeyBoardAction(PS2dev::F5, true);
+                    } else if (selectValue == 1) {
+                        sendKeyBoardAction(PS2dev::F2, true);
+                    } else if (selectValue == 2) {
+                        sendKeyBoardAction(PS2dev::F3, true);
+                    }
                     break;
                 case '7': // PAUSE
                     Serial.println("PAUSE PRESSED");
@@ -491,7 +543,15 @@ void keypadEvent(KeypadEvent key){
                     delay(15);
                     break;
                 case '8': // NADA DE NADA
-                    //F1          
+                    // sendControlEnter();
+                    sendKeyBoardAction(PS2dev::LEFT_CONTROL, true);
+                    //sendSpecialKeyBoardAction2(PS2dev::SpecialScanCodes::RIGHT_CONTROL, true);
+                    // sendKeyBoardAction(PS2dev::LEFT_CONTROL, true);
+                    // delay(1000); // Aumentar el tiempo de espera para asegurar la pulsación
+                    // sendKeyBoardAction(PS2dev::LEFT_CONTROL, false);
+                    sendKeyBoardAction(PS2dev::ENTER, true);
+                    // delay(100); // Aumentar el tiempo de espera para asegurar la pulsación
+                    
                     break;
             }
 
@@ -521,13 +581,20 @@ void keypadEvent(KeypadEvent key){
                     sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, false);  // Presionar UP_ARROW
                     break;
                 case '6': // STOP/EJECT
-                    // Acción para la tecla '6'
-                    Serial.println("Acción para la tecla 6");
+                    if (selectValue == 0) {
+                        sendKeyBoardAction(PS2dev::F5, false);
+                    } else if (selectValue == 1) {
+                        sendKeyBoardAction(PS2dev::F2, false);
+                    } else if (selectValue == 2) {
+                        sendKeyBoardAction(PS2dev::F3, false);
+                    }
                     break;
                 case '7': // PAUSE
                     Serial.println("PAUSE RELEASED");
                     break;
                 case '8': // NADA DE NADA
+                    sendKeyBoardAction(PS2dev::LEFT_CONTROL, false);
+                    sendKeyBoardAction(PS2dev::ENTER, false);
                     break;
             }
             break;
@@ -541,7 +608,7 @@ void keypadEvent(KeypadEvent key){
 
 void setup() {
     Serial.begin(9600);
-    selectValue = "CASSETTE";
+    // selectValue = "CASSETTE";
     myOLED.begin(SSD1306_128X64);
     myOLED.setBrightness(255);
     myOLED.setFont(SmallFont);
@@ -564,8 +631,9 @@ void setup() {
 
 void loop()
 {
-    char key = keypad.getKey();
+    keypad.getKey();
     // char cassetteSwich = cassette.getKey();
+
     currentState = controller.getState();
     gamePadState();
 
