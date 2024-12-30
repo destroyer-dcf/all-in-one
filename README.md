@@ -1,1 +1,11 @@
 # all-in-one
+
+PLAY
+PAUS
+REW
+ FF
+REC
+TAPE
+SNAP
+JOY
+MOUSE

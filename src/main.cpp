@@ -6,6 +6,10 @@
 #include <OLED_I2C.h>
 #include <avr/pgmspace.h>
 
+INTERFACE currentInterface = TAPE;
+DEVICE currentDevice = JOYSTICK;
+ACTION currentAction = STOP;
+
 // GAMEPAD
 // 5 4 3 2 1
 //  9 8 7 6
@@ -44,6 +48,113 @@ String keyCapActive = "SELECT";
 // Controller states Joystick
 word currentState = 0;
 word lastState = 0;
+
+void printCurrentInterface(INTERFACE newInterface) {
+    currentInterface = newInterface; // Actualizar currentInterface con el valor pasado
+
+    switch (currentInterface) {
+        case TAPE:
+            // myOLED.drawBitmap(10, 17, cassette32, 32, 32);
+            myOLED.drawBitmap(10, 22, border24, 24, 24);
+            myOLED.print("TAPE", 7, 30);
+            myOLED.update();
+            Serial.println("Current Interface: TAPE");
+            break;
+        case SNAPSHOT:
+            // myOLED.drawBitmap(10, 20, snapshot32, 32, 29);
+            myOLED.drawBitmap(10, 22, border24, 24, 24);
+            myOLED.print("SNAP", 7, 30);
+            myOLED.update();
+            Serial.println("Current Interface: SNAPSHOT");
+            break;
+        case CUSMTON_SNAPSHOT:
+            //myOLED.drawBitmap(10, 20, snapshot32, 32, 29);
+            myOLED.drawBitmap(10, 22, border24, 24, 24);
+            myOLED.print("SNAP", 7, 30);
+            myOLED.print("C", 19, 21);
+            myOLED.update();
+            Serial.println("Current Interface: CUSMTON_SNAPSHOT");
+            break;
+        default:
+            Serial.println("Current Interface: UNKNOWN");
+            break;
+    }
+}
+
+void printCurrentDevice(DEVICE newDevice) {
+    currentDevice = newDevice; // Actualizar currentDevice con el valor pasado
+
+    switch (currentDevice) {
+        case JOYSTICK:
+            //myOLED.drawBitmap(85, 19, joystick32, 32, 29);
+            myOLED.drawBitmap(95, 22, border24, 24, 24);
+            myOLED.print("JOY", 95, 30);
+            myOLED.update();
+            Serial.println("Current Device: JOYSTICK");
+            break;
+        case MOUSE:
+            myOLED.drawBitmap(85, 19, mouse32, 32, 29);
+            myOLED.update();
+            Serial.println("Current Device: MOUSE");
+            break;
+        default:
+            Serial.println("Current Device: UNKNOWN");
+            break;
+    }
+}
+
+void printCurrentAction(ACTION newAction) {
+    currentAction = newAction; // Actualizar currentAction con el valor pasado
+
+    switch (currentAction) {
+        case PLAY:
+            // myOLED.drawBitmap(51, 22, play, 24, 24);
+            myOLED.print("PLAY", 50, 30);
+            myOLED.update();
+            Serial.println("Action: PLAY");
+            break;
+        case REW:
+            //myOLED.drawBitmap(51, 22, rew, 24, 24);
+            myOLED.print("REW", 54, 30);
+            myOLED.update();
+            Serial.println("Action: REWIND");
+            break;
+        case STOP:
+            //myOLED.drawBitmap(51, 22, stop, 24, 24);
+            myOLED.print("STOP", 50, 30);
+            myOLED.update();
+            Serial.println("Action: STOP");
+            break;
+        case FF:
+            myOLED.drawBitmap(51, 22, ff, 24, 24);
+            myOLED.update();
+            Serial.println("Action: FAST FORWARD");
+            break;
+        case PAUSE:
+            myOLED.drawBitmap(51, 22, pause, 24, 24);
+            myOLED.update();
+            Serial.println("Action: PAUSE");
+            break;
+        case REC:
+            Serial.println("Action: RECORD");
+            myOLED.update();
+            break;
+        case EJECT:
+            Serial.println("Action: RECORD");
+             myOLED.print("EJECT", 50, 30);
+            myOLED.update();
+            break;
+        default:
+            Serial.println("Action: CLEAR");
+            //myOLED.drawBitmap(51, 22, border32, 32, 32);
+            //myOLED.print("PLAY", 50, 30);
+            myOLED.drawBitmap(53, 22, border24, 24, 24);
+            myOLED.print("    ", 50, 30);
+            // myOLED.print("DISC", 48, 30);
+            myOLED.update();
+            break;
+    }
+}
 
 void displayTextOLED(const String& text) {
     myOLED.clrScr();
@@ -198,56 +309,61 @@ void gamePadState()
     lastState = currentState;
 }
 
-void paintTape() {
-    myOLED.drawBitmap(10, 26, cassette32, 32, 32);
-    myOLED.update();
-}
+// void paintTape() {
+//     currentInterface = TAPE;
+//     myOLED.drawBitmap(10, 26, cassette32, 32, 32);
+//     myOLED.update();
+// }
 
-void paintSnap() {
-    myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
-    myOLED.update();
-}
+// void paintSnap() {
+//     currentInterface = SNAPSHOT;
+//     myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
+//     myOLED.update();
+// }
 
-void paintSnapCusmton() {
-    myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
-    myOLED.print("C", 23, 51);
-    myOLED.update();
-}
+// void paintSnapCusmton() {
+//     currentInterface = CUSMTON_SNAPSHOT;
+//     myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
+//     myOLED.print("C", 23, 51);
+//     myOLED.update();
+// }
 
-void paintJoystick() {
-    myOLED.drawBitmap(85, 26, joystick32, 32, 29);
-    myOLED.update();
-}
+// void paintJoystick() {
+//     currentDevice = JOYSTICK;
+//     myOLED.drawBitmap(85, 26, joystick32, 32, 29);
+//     myOLED.update();
+// }
 
-void paintMouse() {
-    myOLED.drawBitmap(85, 26, mouse32, 32, 29);
-    myOLED.update();
-}
+// void paintMouse() {
+//     currentDevice = MOUSE;
+//     myOLED.drawBitmap(85, 26, mouse32, 32, 29);
+//     myOLED.update();
+// }
 
-void paintPlay() {
-    myOLED.drawBitmap(51, 28, rew, 24, 24);
-    myOLED.update();
-}
+// void paintPlay() {
+//     myOLED.drawBitmap(51, 28, rew, 24, 24);
+//     myOLED.update();
+// }
 
-void paintRew() {
-    myOLED.drawBitmap(51, 28, rew, 24, 24);
-    myOLED.update();
-}
+// void paintRew() {
+//     myOLED.drawBitmap(51, 28, rew, 24, 24);
+//     myOLED.update();
+// }
 
-void paintStop() {
-    myOLED.drawBitmap(51, 28, stop, 24, 24);
-    myOLED.update();
-}
+// void paintStop() {
+//     myOLED.drawBitmap(51, 28, stop, 24, 24);
+//     myOLED.update();
+// }
 
-void paintFF() {
-    myOLED.drawBitmap(51, 28, ff, 24, 24);
-    myOLED.update();
-}
+// void paintFF() {
+//     myOLED.drawBitmap(51, 28, ff, 24, 24);
+//     myOLED.update();
+// }
 
-void paintPause() {
-    myOLED.drawBitmap(51, 28, pause, 24, 24);
-    myOLED.update();
-}
+// void paintPause() {
+//     myOLED.drawBitmap(51, 28, pause, 24, 24);
+//     myOLED.update();
+// }
 
 void keypadEvent(KeypadEvent key){
     switch (keypad.getState()){
@@ -255,20 +371,19 @@ void keypadEvent(KeypadEvent key){
             switch (key) {
                 case '1': // SELECT
                     selectValue = (selectValue + 1) % 3; // Incrementar y ciclar entre 0 y 2
-
                     switch (selectValue) {
                         case 0:
-                            paintTape();
+                            printCurrentInterface(TAPE);
                             Serial.println("--- CASSETTE SELECTED, Value: " + String(selectValue));
                             keyboard.keyboard_press(PS2dev::ESCAPE);
                             break;
                         case 1:
-                            paintSnap();
+                            printCurrentInterface(SNAPSHOT);
                             Serial.println("--- SNA SELECTED, Value: " + String(selectValue));
                             keyboard.keyboard_press(PS2dev::ESCAPE);
                             break;
                         case 2:
-                            paintSnapCusmton();
+                            printCurrentInterface(CUSMTON_SNAPSHOT);
                             Serial.println("--- CUSMTON SNA SELECTED, Value: " + String(selectValue));
                             keyboard.keyboard_press(PS2dev::ESCAPE);
                             break;
@@ -281,33 +396,47 @@ void keypadEvent(KeypadEvent key){
                     break;
                 case '3': // PLAY
                     keyCapActive = "PLAY";
+                    printCurrentAction(PLAY);
                     Serial.println("PLAY PRESSED");
                     keyboard.keyboard_press(PS2dev::ENTER);
                     break;
                 case '4': // REW
                     keyCapActive = "REW";
+                    printCurrentAction(REW);
                     Serial.println("REW PRESSED");
                     keyboard.keyboard_press_special(PS2dev::SpecialScanCodes::DOWN_ARROW);
                     break;
                 case '5': // FF
+                    printCurrentAction(FF);
                     keyCapActive = "FF";
                     Serial.println("FF PRESSED");
                     keyboard.keyboard_press_special(PS2dev::SpecialScanCodes::UP_ARROW);
                     break;
                 case '6': // STOP/EJECT
+                    printCurrentAction(EJECT);
                     if (selectValue == 0) {
+                        printCurrentAction(EJECT);
                         keyboard.keyboard_press(PS2dev::F5);
                     } else if (selectValue == 1) {
+                        printCurrentAction(EJECT);
                         keyboard.keyboard_press(PS2dev::F2);
                     } else if (selectValue == 2) {
+                        printCurrentAction(EJECT);
                         keyboard.keyboard_press(PS2dev::F3);
                     }
                     break;
                 case '7': // PAUSE
                     Serial.println("PAUSE PRESSED");
-                    keyboard.key_pause();
-                    //keyboard.keyboard_press(PS2dev::ESCAPE);
-                    keyCapActive = "PAUSE";
+                    //keyboard.key_pause();
+                    keyboard.keyboard_press(PS2dev::ESCAPE);
+                    if (keyCapActive == "PAUSE") {
+                        printCurrentAction(PLAY);
+                        keyCapActive = "PLAY";
+                    }else {
+                        printCurrentAction(PAUSE);
+                        keyCapActive = "PAUSE";
+                    }
+                    
                     break;
                 case '8': // NADA DE NADA
                     // keyboard.key_break();
@@ -325,21 +454,25 @@ void keypadEvent(KeypadEvent key){
                     Serial.println("REC RELEASED");
                     keyboard.keyboard_release(PS2dev::F4);
                     keyCapActive = "NADA";
+                    printCurrentAction(CLEAR);
                     break;
                 case '3': // PLAY
                     keyCapActive = "PLAY";
                     Serial.println("PLAY RELEASED");
                     keyboard.keyboard_release(PS2dev::ENTER);
+                    printCurrentAction(CLEAR);
                     break;
                 case '4': // REW
                     keyCapActive = "NADA";
                     Serial.println("REW RELEASED");
                     keyboard.keyboard_release_special(PS2dev::SpecialScanCodes::DOWN_ARROW);
+                    printCurrentAction(CLEAR);
                     break;
                 case '5': // FF
                     keyCapActive = "FF";
                     Serial.println("FF RELEASED");
                     keyboard.keyboard_release_special(PS2dev::SpecialScanCodes::UP_ARROW);
+                    printCurrentAction(CLEAR);
                     break;
                 case '6': // STOP/EJECT
                     if (selectValue == 0) {
@@ -352,7 +485,8 @@ void keypadEvent(KeypadEvent key){
                     break;
                 case '7': // PAUSE
                     Serial.println("PAUSE RELEASED");
-                    
+                    keyboard.keyboard_release(PS2dev::ESCAPE);
+                    printCurrentAction(CLEAR);
                     break;
                 case '8': // NADA DE NADA
                     keyboard.keyboard_release(PS2dev::ESCAPE);
@@ -376,17 +510,17 @@ void setup() {
     myOLED.setFont(SmallFont);
     myOLED.clrScr();
     myOLED.drawRoundRect(0,63,127,16);
-    paintTape();
-    paintJoystick();
+    myOLED.print("ESPectrum", 28, 53);
+    // myOLED.print(" CPCEsp", 28, 53);
+    printCurrentDevice(JOYSTICK);
+    printCurrentInterface(TAPE);
+    printCurrentAction(CLEAR);
     keypad.addEventListener(keypadEvent);
 }
 
 void loop()
 {
     keypad.getKey();
-
     currentState = controller.getState();
     gamePadState();
-
-
 }
