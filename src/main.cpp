@@ -495,35 +495,36 @@ void keypadEvent(KeypadEvent key){
                 case '2': // REC
                     keyCapActive = "REC";
                     Serial.println("REC PRESSED");
-                    sendKeyBoardAction(PS2dev::F4, true);
+                    keyboard.keyboard_press(PS2dev::F4);
                     break;
                 case '3': // PLAY
                     keyCapActive = "PLAY";
                     Serial.println("PLAY PRESSED");
-                    sendKeyBoardAction(PS2dev::F6, true);
+                    keyboard.keyboard_press(PS2dev::ENTER);
                     break;
                 case '4': // REW
                     keyCapActive = "REW";
                     Serial.println("REW PRESSED");
-                    sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::DOWN_ARROW, true);  // Presionar UP_ARROW
+                    keyboard.keyboard_press_special(PS2dev::SpecialScanCodes::DOWN_ARROW);
                     break;
                 case '5': // FF
                     keyCapActive = "FF";
                     Serial.println("FF PRESSED");
-                    sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, true);  // Presionar UP_ARROW
+                    keyboard.keyboard_press_special(PS2dev::SpecialScanCodes::UP_ARROW);
                     break;
                 case '6': // STOP/EJECT
                     // Acción para la tecla '6'
                     if (selectValue == 0) {
-                        sendKeyBoardAction(PS2dev::F5, true);
+                        keyboard.keyboard_press(PS2dev::F5);
                     } else if (selectValue == 1) {
-                        sendKeyBoardAction(PS2dev::F2, true);
+                        keyboard.keyboard_press(PS2dev::F2);
                     } else if (selectValue == 2) {
-                        sendKeyBoardAction(PS2dev::F3, true);
+                        keyboard.keyboard_press(PS2dev::F3);
                     }
                     break;
                 case '7': // PAUSE
                     Serial.println("PAUSE PRESSED");
+                    // keyboard.keyboard_pausebreak();
                     keyCapActive = "PAUSE";
                     keyboard.write(0xE1);
                     delay(15);
@@ -562,31 +563,31 @@ void keypadEvent(KeypadEvent key){
                     break;
                 case '2': // REC
                     Serial.println("REC RELEASED");
-                    sendKeyBoardAction(PS2dev::F4, false);
+                    keyboard.keyboard_release(PS2dev::F4);
                     keyCapActive = "NADA";
                     break;
                 case '3': // PLAY
                     keyCapActive = "PLAY";
                     Serial.println("PLAY RELEASED");
-                    sendKeyBoardAction(PS2dev::F6, false);
+                    keyboard.keyboard_release(PS2dev::ENTER);
                     break;
                 case '4': // REW
                     keyCapActive = "NADA";
                     Serial.println("REW RELEASED");
-                    sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::DOWN_ARROW, false);  // Presionar UP_ARROW
+                    keyboard.keyboard_release_special(PS2dev::SpecialScanCodes::DOWN_ARROW);
                     break;
                 case '5': // FF
                     keyCapActive = "FF";
                     Serial.println("FF RELEASED");
-                    sendSpecialKeyBoardAction(PS2dev::SpecialScanCodes::UP_ARROW, false);  // Presionar UP_ARROW
+                    keyboard.keyboard_release_special(PS2dev::SpecialScanCodes::UP_ARROW);
                     break;
                 case '6': // STOP/EJECT
                     if (selectValue == 0) {
-                        sendKeyBoardAction(PS2dev::F5, false);
+                        keyboard.keyboard_release(PS2dev::F5);
                     } else if (selectValue == 1) {
-                        sendKeyBoardAction(PS2dev::F2, false);
+                        keyboard.keyboard_release(PS2dev::F2);
                     } else if (selectValue == 2) {
-                        sendKeyBoardAction(PS2dev::F3, false);
+                        keyboard.keyboard_release(PS2dev::F3);
                     }
                     break;
                 case '7': // PAUSE
