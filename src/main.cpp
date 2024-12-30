@@ -466,31 +466,50 @@ void sendKeyEsc() {
 
 //     Serial.println("--- " + selectValue + " SELECTED");
 // }
-void select() {
-    selectValue = (selectValue + 1) % 3; // Incrementar y ciclar entre 0 y 2
+// void select() {
+//     selectValue = (selectValue + 1) % 3; // Incrementar y ciclar entre 0 y 2
 
-    switch (selectValue) {
-        case 0:
-            paintTape();
-            Serial.println("--- CASSETTE SELECTED, Value: " + String(selectValue));
-            break;
-        case 1:
-            paintSnap();
-            Serial.println("--- SNA SELECTED, Value: " + String(selectValue));
-            break;
-        case 2:
-            paintSnapCusmton();
-            Serial.println("--- CUSMTON SNA SELECTED, Value: " + String(selectValue));
-            break;
-    }
-}
+//     switch (selectValue) {
+//         case 0:
+//             paintTape();
+//             Serial.println("--- CASSETTE SELECTED, Value: " + String(selectValue));
+//             keyboard.keyboard_press(PS2dev::ESCAPE);
+//             break;
+//         case 1:
+//             paintSnap();
+//             Serial.println("--- SNA SELECTED, Value: " + String(selectValue));
+//             break;
+//         case 2:
+//             paintSnapCusmton();
+//             Serial.println("--- CUSMTON SNA SELECTED, Value: " + String(selectValue));
+//             break;
+//     }
+// }
 
 void keypadEvent(KeypadEvent key){
     switch (keypad.getState()){
         case PRESSED:
             switch (key) {
                 case '1': // SELECT
-                    select();
+                    selectValue = (selectValue + 1) % 3; // Incrementar y ciclar entre 0 y 2
+
+                    switch (selectValue) {
+                        case 0:
+                            paintTape();
+                            Serial.println("--- CASSETTE SELECTED, Value: " + String(selectValue));
+                            keyboard.keyboard_press(PS2dev::ESCAPE);
+                            break;
+                        case 1:
+                            paintSnap();
+                            Serial.println("--- SNA SELECTED, Value: " + String(selectValue));
+                            keyboard.keyboard_press(PS2dev::ESCAPE);
+                            break;
+                        case 2:
+                            paintSnapCusmton();
+                            Serial.println("--- CUSMTON SNA SELECTED, Value: " + String(selectValue));
+                            keyboard.keyboard_press(PS2dev::ESCAPE);
+                            break;
+                    }
                     break;
                 case '2': // REC
                     keyCapActive = "REC";
@@ -524,33 +543,35 @@ void keypadEvent(KeypadEvent key){
                     break;
                 case '7': // PAUSE
                     Serial.println("PAUSE PRESSED");
-                    // keyboard.keyboard_pausebreak();
+                    keyboard.key_pause();
                     keyCapActive = "PAUSE";
-                    keyboard.write(0xE1);
-                    delay(15);
-                    keyboard.write(0x14);
-                    delay(15);
-                    keyboard.write(0x77);
-                    delay(15);
-                    keyboard.write(0xE1);
-                    delay(15);
-                    keyboard.write(0xF0);
-                    delay(15);
-                    keyboard.write(0x14);
-                    delay(15);
-                    keyboard.write(0xF0);
-                    delay(15);
-                    keyboard.write(0x77);
-                    delay(15);
+                    // keyboard.write(0xE1);
+                    // delay(15);
+                    // keyboard.write(0x14);
+                    // delay(15);
+                    // keyboard.write(0x77);
+                    // delay(15);
+                    // keyboard.write(0xE1);
+                    // delay(15);
+                    // keyboard.write(0xF0);
+                    // delay(15);
+                    // keyboard.write(0x14);
+                    // delay(15);
+                    // keyboard.write(0xe0);
+                    // delay(15);
+                    // keyboard.write(0x77);
+                    // delay(15);
                     break;
                 case '8': // NADA DE NADA
-                    // sendControlEnter();
-                    sendKeyBoardAction(PS2dev::LEFT_CONTROL, true);
+                    // keyboard.key_break();
+                    keyboard.keyboard_press(PS2dev::ESCAPE);
+                                    // sendControlEnter();
+                    ///////sendKeyBoardAction(PS2dev::LEFT_CONTROL, true);
                     //sendSpecialKeyBoardAction2(PS2dev::SpecialScanCodes::RIGHT_CONTROL, true);
                     // sendKeyBoardAction(PS2dev::LEFT_CONTROL, true);
                     // delay(1000); // Aumentar el tiempo de espera para asegurar la pulsación
                     // sendKeyBoardAction(PS2dev::LEFT_CONTROL, false);
-                    sendKeyBoardAction(PS2dev::ENTER, true);
+                    ///////sendKeyBoardAction(PS2dev::ENTER, true);
                     // delay(100); // Aumentar el tiempo de espera para asegurar la pulsación
                     
                     break;
@@ -560,6 +581,7 @@ void keypadEvent(KeypadEvent key){
         case RELEASED:
             switch (key) {
                 case '1': // REC
+                    keyboard.keyboard_release(PS2dev::ESCAPE);
                     break;
                 case '2': // REC
                     Serial.println("REC RELEASED");
@@ -594,8 +616,9 @@ void keypadEvent(KeypadEvent key){
                     Serial.println("PAUSE RELEASED");
                     break;
                 case '8': // NADA DE NADA
-                    sendKeyBoardAction(PS2dev::LEFT_CONTROL, false);
-                    sendKeyBoardAction(PS2dev::ENTER, false);
+                    keyboard.keyboard_release(PS2dev::ESCAPE);
+                    // sendKeyBoardAction(PS2dev::LEFT_CONTROL, false);
+                    // sendKeyBoardAction(PS2dev::ENTER, false);
                     break;
             }
             break;

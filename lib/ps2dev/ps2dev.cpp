@@ -451,3 +451,33 @@ int PS2dev::keyboard_pausebreak()
 
   return 0;
 }
+
+// Presses/Releases Pause/Break
+int PS2dev::key_pause()
+{
+  write(0xe1);
+  write(0x14);
+  write(0x77);
+  write(0xe1);
+  write(0xf0);
+  write(0x14);
+  write(0xf0);
+  write(0x77);
+
+  return 0;
+}
+
+// Presses/Releases Break
+int PS2dev::key_break()
+{
+  write(0xe1);
+  write(0x14);
+  write(0x77);
+  write(0xe1);
+  write(0xf0);
+  write(0x14);
+  write(0xf0);
+  write(0x77);
+
+  return 0;
+}

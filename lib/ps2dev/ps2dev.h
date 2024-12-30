@@ -197,6 +197,8 @@ class PS2dev
     int keyboard_release_printscreen();
     int keyboard_mkbrk_printscreen();
     int keyboard_pausebreak();
+    int key_pause();
+    int key_break();
     int keyboard_reply(unsigned char cmd, unsigned char *leds);
     int keyboard_handle(unsigned char *leds);
     int keyboard_mkbrk(unsigned char code);
