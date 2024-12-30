@@ -205,26 +205,22 @@ void paintTape() {
 
 void paintSnap() {
     myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
-    // myOLED.print("SNAP", 11, 22);
     myOLED.update();
 }
 
 void paintSnapCusmton() {
     myOLED.drawBitmap(10, 26, snapshot32, 32, 29);
-    // myOLED.print("SNAP", 11, 22);
     myOLED.print("C", 23, 51);
     myOLED.update();
 }
 
 void paintJoystick() {
     myOLED.drawBitmap(85, 26, joystick32, 32, 29);
-    // myOLED.print("JOY", 90, 22);
     myOLED.update();
 }
 
 void paintMouse() {
     myOLED.drawBitmap(85, 26, mouse32, 32, 29);
-    // myOLED.print("MOUSE", 86, 22);
     myOLED.update();
 }
 
@@ -299,7 +295,6 @@ void keypadEvent(KeypadEvent key){
                     keyboard.keyboard_press_special(PS2dev::SpecialScanCodes::UP_ARROW);
                     break;
                 case '6': // STOP/EJECT
-                    // Acción para la tecla '6'
                     if (selectValue == 0) {
                         keyboard.keyboard_press(PS2dev::F5);
                     } else if (selectValue == 1) {
@@ -311,6 +306,7 @@ void keypadEvent(KeypadEvent key){
                 case '7': // PAUSE
                     Serial.println("PAUSE PRESSED");
                     keyboard.key_pause();
+                    //keyboard.keyboard_press(PS2dev::ESCAPE);
                     keyCapActive = "PAUSE";
                     break;
                 case '8': // NADA DE NADA
@@ -322,7 +318,7 @@ void keypadEvent(KeypadEvent key){
             break;
         case RELEASED:
             switch (key) {
-                case '1': // REC
+                case '1': // SELECT
                     keyboard.keyboard_release(PS2dev::ESCAPE);
                     break;
                 case '2': // REC
@@ -356,6 +352,7 @@ void keypadEvent(KeypadEvent key){
                     break;
                 case '7': // PAUSE
                     Serial.println("PAUSE RELEASED");
+                    
                     break;
                 case '8': // NADA DE NADA
                     keyboard.keyboard_release(PS2dev::ESCAPE);
@@ -374,7 +371,6 @@ void keypadEvent(KeypadEvent key){
 
 void setup() {
     Serial.begin(9600);
-    // selectValue = "CASSETTE";
     myOLED.begin(SSD1306_128X64);
     myOLED.setBrightness(255);
     myOLED.setFont(SmallFont);
